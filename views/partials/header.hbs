@@ -1,0 +1,7 @@
+<div id="header">
+    <h1><a href="/">ToDo</a></h1>
+    {{#if user}}
+      Welcome {{user.email}}
+      <a href="/logout" class="btn btn-default">Logout</a>
+    {{/if}}
+</div>

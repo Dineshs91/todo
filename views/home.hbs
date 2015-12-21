@@ -1,0 +1,12 @@
+<div class="home-content">
+    <h3>Welcome to the next gen ToDo app.</h3>
+
+    {{#if user}}
+            Checkout your todo list.
+            <a href='/todo' class="btn btn-default">todo</a>
+    {{else}}
+        Please login or signup to continue.<br/>
+        <a href='/login' class="btn btn-default">Login</a>
+        <a href='/signup' class="btn btn-default">Signup</a>
+    {{/if}}
+</div>
