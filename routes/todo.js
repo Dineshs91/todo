@@ -14,9 +14,11 @@ function isLoggedIn(req, res, next) {
 }
 
 function getLocation(ip) {
-  ip = '49.207.189.50';
+  if(ip == ':::1')
+      ip = '49.207.189.50';
+
   var deferred = Q.defer();
-  
+
   http.request('http://freegeoip.net/json/' + ip, function(response) {
     response.on('data', function(chunk) {
       res = JSON.parse(chunk);
@@ -24,12 +26,12 @@ function getLocation(ip) {
 
       deferred.resolve(city);
     });
-    
+
     response.on('error', function(err) {
       deferred.refect(err);
     })
   }).end();
-  
+
   return deferred.promise;
 }
 
@@ -49,32 +51,59 @@ var saveTodo = function(req) {
   });
 };
 
+var updatePlace = function(req) {
+  var place = req.body.place;
+
+  User.update({ id: req.user.id }, { place: place }, function(err, user) {
+    if(err)
+      return handleError(err);
+  });
+};
+
 router.get('/', isLoggedIn, function(req, res, next) {
    var user = req.user;
    var ip = req.connection.remoteAddress;
+   var userPlace = '';
 
-   getLocation(ip).then(function(city) {
-     User.update({ email: user }, { place: city }, function(err, user) {
-       if(err)
-         return handleError(err);
-     });
-   });
-  
-  Todo.find({ user: req.user.id }).then(function(todos) {
+   User.find({ id: req.user.id }).then(function(user) {
+     if(user && user.place == null) {
+       getLocation(ip).then(function(place) {
+         userPlace = place;
+         User.update({ id: req.user.id }, { place: place }, function(err, user) {
+           if(err)
+             return handleError(err);
+         });
+       });
+     }
+     return Todo.find({ user: req.user.id });
+   }).then(function(todos) {
     res.render('todo', {
       user: req.user,
-      todos: todos
+      todos: todos,
+      place: userPlace
     });
-  });
+
+  // Todo.find({ user: req.user.id }).then(function(todos) {
+ //    res.render('todo', {
+ //      user: req.user,
+ //      todos: todos
+ //    });
+ //  });
 });
 
 //Handle adding a todo
 router.post('/add', isLoggedIn, function(req, res, next) {
   saveTodo(req);
-  
+
   Todo.find({ user: req.user.id }).then(function(todos) {
     res.json({'todos': todos});
   });
+});
+
+router.post('/place', isLoggedIn, function(req, res, next) {
+  updatePlace(req);
+
+  res.json({'status': 'success'});
 });
 
 module.exports = router;
