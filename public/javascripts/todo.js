@@ -5,7 +5,22 @@ $(function() {
     validateTodo();
     return false;
   });
+
+  $('.place-update').click(function() {
+    updateLocation();
+  });
 });
+
+function updateLocation() {
+  var place = $('.user-place').val();
+
+  $.post('/todo/place', {place: place})
+  .done(function(data) {
+    showLocationMessage('Location updated successfully');
+  }).fail(function(err) {
+    showLocationMessage('Something went wrong. Please try again');
+  });
+}
 
 function validateTodo() {
   var content = $('#todo-content').val();
@@ -24,7 +39,7 @@ function validateTodo() {
     msg = msg + 'Choose a due time. ';
   }
   
-  showMessage(msg);
+  showMessageInAddModal(msg);
 }
 
 // Ajax call to /todo/add
@@ -33,16 +48,17 @@ function saveTodo(content, time) {
   .done(function(data) {
     $('#addModal').modal('hide');
     
-    clearTodoForm();
+    clearAddTodoForm();
     appendTodo(data);
   }).fail(function(err) {
-    showMessage('Failed to save todo. Please try again.');
+    showMessageInAddModal('Failed to save todo. Please try again.');
   })
 }
 
-function clearTodoForm() {
+function clearAddTodoForm() {
   var content = $('#todo-content').val('');
   var time = $('#datetimepicker').val('');
+  showMessageInAddModal('');
 }
 
 function appendTodo(data) {
@@ -53,7 +69,11 @@ function appendTodo(data) {
   $('ul.list-group').append(ele);
 }
 
-function showMessage(msg) {
+function showLocationMessage(msg) {
+  $('.location-message.message').text(msg);
+}
+
+function showMessageInAddModal(msg) {
   $('.todo-add.message').text(msg);
 }
 
