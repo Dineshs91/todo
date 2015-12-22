@@ -14,7 +14,7 @@ function isLoggedIn(req, res, next) {
 }
 
 function getLocation(ip) {
-  if(ip == ':::1')
+  if(ip == '::1')
       ip = '49.207.189.50';
 
   var deferred = Q.defer();
@@ -52,43 +52,37 @@ var saveTodo = function(req) {
 };
 
 var updatePlace = function(req) {
+  var deferred = Q.defer();
   var place = req.body.place;
 
-  User.update({ id: req.user.id }, { place: place }, function(err, user) {
+  User.update({ email: req.user.email }, { place: place }, function(err, user) {
     if(err)
       return handleError(err);
+    deferred.resolve();
   });
+
+  return deferred.promise;
 };
 
 router.get('/', isLoggedIn, function(req, res, next) {
-   var user = req.user;
-   var ip = req.connection.remoteAddress;
-   var userPlace = '';
+  var ip = req.connection.remoteAddress;
 
-   User.find({ id: req.user.id }).then(function(user) {
-     if(user && user.place == null) {
-       getLocation(ip).then(function(place) {
-         userPlace = place;
-         User.update({ id: req.user.id }, { place: place }, function(err, user) {
-           if(err)
-             return handleError(err);
-         });
-       });
+  User.findOne({ email: req.user.email }).then(function(user) {
+    if(user && !('place' in user)) {
+      getLocation(ip).then(function(place) {
+        User.update({ email: req.user.email }, { place: place }, function(err, user) {
+          if(err)
+            return handleError(err);
+        });
+      });
      }
      return Todo.find({ user: req.user.id });
    }).then(function(todos) {
     res.render('todo', {
       user: req.user,
-      todos: todos,
-      place: userPlace
+      todos: todos
     });
-
-  // Todo.find({ user: req.user.id }).then(function(todos) {
- //    res.render('todo', {
- //      user: req.user,
- //      todos: todos
- //    });
- //  });
+  });
 });
 
 //Handle adding a todo
@@ -101,9 +95,9 @@ router.post('/add', isLoggedIn, function(req, res, next) {
 });
 
 router.post('/place', isLoggedIn, function(req, res, next) {
-  updatePlace(req);
-
-  res.json({'status': 'success'});
+  updatePlace(req).then(function() {
+    res.json({'status': 'success'});
+  });
 });
 
 module.exports = router;
