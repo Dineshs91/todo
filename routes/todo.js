@@ -37,8 +37,8 @@ function getLocation(ip) {
 
 var saveTodo = function(req) {
   var content = req.body.content;
-  var due_time = req.body.time;
-  
+  var due_time = new Date(req.body.time);
+
   var TodoItem = new Todo({
     user: req.user.id,
     content: content,

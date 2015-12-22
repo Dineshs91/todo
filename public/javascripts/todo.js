@@ -1,5 +1,9 @@
 $(function() {
-  $('#datetimepicker').datetimepicker();
+  $('#datetimepicker').datetimepicker({
+    format: 'MM dd, yyyy hh:ii:ss',
+    showMeridian: true,
+    autoclose: true
+  });
 
   $('[name="todoForm"]').submit(function() {
     validateTodo();
@@ -47,7 +51,7 @@ function saveTodo(content, time) {
   $.post('/todo/add', {content: content, time: time})
   .done(function(data) {
     $('#addModal').modal('hide');
-    
+
     clearAddTodoForm();
     appendTodo(data);
   }).fail(function(err) {
@@ -65,7 +69,7 @@ function appendTodo(data) {
   var todos = data.todos;
   var newTodo = todos[todos.length - 1];
   
-  var ele = '<li class="list-group-item">' + newTodo.content + ' - ' + Date.parse(newTodo.due_time) + ' - ' + newTodo.stat + '</li>';
+  var ele = '<li class="list-group-item">' + newTodo.content + ' - ' + new Date(newTodo.due_time) + ' - ' + newTodo.stat + '</li>';
   $('ul.list-group').append(ele);
 }
 
