@@ -16,7 +16,7 @@ $(function() {
   // Remove any error messages when other tab
   // is clicked.
   $('#my-tabs').click(function() {
-    showMessage('');
+    displayMessage('');
   });
 });
 
@@ -25,7 +25,7 @@ function selectTab() {
   if(pathname.indexOf('signup') > -1) {
     $('#my-tabs a[href="#signup"]').tab('show');
   } else {
-    $('#my-tabs a[href="#login"]').tab('show')
+    $('#my-tabs a[href="#login"]').tab('show');
   }
 }
 
@@ -39,18 +39,19 @@ function validateForm(email, password) {
   
   var msg = '';
   if (!validEmail) {
-    msg = msg + 'Invalid email address. '
+    msg = msg + 'Invalid email address. ';
   }
   
   if(!validPassword) {
-    msg = msg + 'Invalid password. '
+    msg = msg + 'Invalid password. ';
   }
   
-  showMessage(msg);
+  displayMessage(msg);
+  $('.message').text(msg);
   return false;
 }
 
-function showMessage(msg) {
+function displayMessage(msg) {
   $('.message').text(msg);
 }
 
