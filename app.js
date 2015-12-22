@@ -125,7 +125,8 @@ passport.use('google', new GoogleStrategy({
 passport.serializeUser(function(user, cb) {
   cb(null, {
     id: user._id,
-    email: user.email
+    email: user.email,
+    place: user.place
   });
 });
 
@@ -136,7 +137,8 @@ passport.deserializeUser(function(user, cb) {
     }
     cb(null, {
       id: user._id,
-      email: user.email
+      email: user.email,
+      place: user.place
     });
   });
 });
