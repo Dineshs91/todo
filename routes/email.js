@@ -49,9 +49,9 @@ function updateTodo(todoId, action) {
 
 // Handle user actions from email
 router.get('/todo/:todoId/:token/:action', function(req, res) {
-  var todoId = req.param("todoId");
-  var token = req.param("token");
-  var action = req.param("action");
+  var todoId = req.params.todoId;
+  var token = req.params.token;
+  var action = req.params.action;
 
   validateToken(token).then(function(status) {
     if(status) {
