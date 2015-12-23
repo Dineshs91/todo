@@ -19,6 +19,7 @@ var home = require('./routes/home');
 var signup = require('./routes/signup');
 var login = require('./routes/login');
 var todo = require('./routes/todo');
+var email = require('./routes/email');
 
 var app = express();
 
@@ -51,6 +52,7 @@ app.use('/', home);
 app.use('/login', login);
 app.use('/signup', signup);
 app.use('/todo', todo);
+app.use('/email', email);
 
 // Passport strategies
 // Local strategy
