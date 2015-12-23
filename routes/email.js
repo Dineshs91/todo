@@ -1,9 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var Q = require('q');
+var mongoose = require('mongoose');
 
 var Todo = require('../models/todo').Todo;
 var EmailAction = require('../models/emailAction').EmailAction;
+
+mongoose.Promise = Q.Promise;
 
 // http://localhost:3000/email/todo/{todoId}/{token}/{action}
 function validateToken(token) {
