@@ -1,13 +1,13 @@
 var mongoose = require('mongoose');
 var crypto = require('crypto');
 var Q = require('q');
-require('mongoose').Promise = require('q').Promise;
 
 var Todo = require('../models/todo.js').Todo;
 var User = require('../models/user.js').User;
 var EmailAction = require('../models/emailAction.js').EmailAction;
 
 mongoose.connect('mongodb://localhost/tododb1');
+mongoose.Promise = Q.Promise;
 
 function fetchEndingTodos() {
   var deferred = Q.defer();
