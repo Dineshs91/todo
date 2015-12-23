@@ -67,7 +67,11 @@ function clearAddTodoForm() {
 
 function appendTodo(data) {
   var todos = data.todos;
-  var newTodo = todos[todos.length - 1];
+  if(todos.constructor === Array) {
+    var newTodo = todos[todos.length - 1];
+  } else {
+    var newTodo = todos;
+  }
   
   var ele = '<li class="list-group-item">' + newTodo.content + ' - ' + new Date(newTodo.due_time) + ' - ' + newTodo.stat + '</li>';
   $('ul.list-group').append(ele);
