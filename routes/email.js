@@ -32,7 +32,7 @@ function updateTodo(todoId, action) {
   var deferred = Q.defer();
   var todoObjectId = new mongoose.Types.ObjectId(todoId);
   var promise;
-  var newTime = new Date((Date.now() + 864000000));
+  var newTime = new Date((Date.now() + 86400000));
 
   if(action == 'close') {
     var stat = 'closed';
