@@ -12,8 +12,8 @@ var expressHandlebars = require('express-handlebars');
 var LocalStrategy = require('passport-local');
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var FacebookStrategy = require('passport-facebook');
+var config = require('./config').config;
 var User = require('./models/user').User;
-var OAuthUser = require('./models/oauth-user').OAuthUser;
 
 var home = require('./routes/home');
 var signup = require('./routes/signup');
@@ -23,8 +23,8 @@ var email = require('./routes/email');
 
 var app = express();
 
-var GOOGLE_CLIENT_ID = "143469076622-evb489mvj04rgduolunsfjpfpijd7lie.apps.googleusercontent.com";
-var GOOGLE_CLIENT_SECRET = "nO9KUhqsaUxBows1WEeURjeY";
+var GOOGLE_CLIENT_ID = config.GOOGLE_CLIENT_ID;
+var GOOGLE_CLIENT_SECRET = config.GOOGLE_CLIENT_SECRET;
 
 // connect to mongodb
 mongoose.connect('mongodb://localhost/tododb1');
