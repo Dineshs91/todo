@@ -66,7 +66,9 @@ passport.use('local-signup', new LocalStrategy({
         // Insert into db
         var NewUser = new User({
           email: email,
-          password: password
+          password_hash: password,
+          auth_method: 'local',
+          timestamp: Date.now()
         });
         NewUser.save().then(function(user) {
           return done(null, user);  
@@ -101,19 +103,22 @@ passport.use('google', new GoogleStrategy({
   clientSecret: GOOGLE_CLIENT_SECRET,
   callbackURL: "http://localhost:3000/auth/google/callback"
 }, function(accessToken, refreshToken, profile, done) {
-  OAuthUser.findOne({ google_id: profile.id }, function(err, oauthUser) {
+  User.findOne({ profile_id: profile.id }, function(err, user) {
     if(err)
       return done(err);
     
-    if(oauthUser) {
-      return done(null, oauthUser);
+    if(user) {
+      return done(null, user);
     } else {
-      var newUser = new OAuthUser();
-      newUser.profile_id = profile.id;
-      newUser.access_token = accessToken;
-      newUser.refresh_token = refreshToken;
-      newUser.email = profile.emails[0].value;
-      
+      var newUser = new User({
+        profile_id: profile.id,
+        auth_method: 'google',
+        access_token: accessToken,
+        refresh_token: refreshToken,
+        email: profile.emails[0].value,
+        timestamp: Date.now()
+      });
+
       newUser.save(function(err) {
         if(err)
           throw err;
