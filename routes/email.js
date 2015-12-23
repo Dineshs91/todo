@@ -14,14 +14,14 @@ function validateToken(token) {
 
   // check for token and expires.
   var nowTimestamp = Date.now()
-  EmailAction.find({ $and: [{token: token }, {expires: { $lt: nowTimestamp } }] }).then(function(actions, err) {
-    if(err)
-      deferred.reject();
+  EmailAction.find({ $and: [{token: token }, {expires: { $lt: nowTimestamp } }] }).then(function(actions) {
     if(actions == undefined) {
       deferred.resolve(false);
     } else {
       deferred.resolve(true);
     }
+  }).catch(function(err) {
+    deferred.reject(err);
   });
 
   return deferred.promise;
@@ -58,12 +58,12 @@ router.get('/todo/:todoId/:token/:action', function(req, res) {
 
   validateToken(token).then(function(status) {
     if(status) {
-      updateTodo(todoId, action).then(function() {
-        res.send('success');
-      }).catch(function() {
-        res.send('failed. Please try again later');
-      });
+      return updateTodo(todoId, action);
     }
+  }).then(function() {
+    res.send('Action completed successfully');
+  }).catch(function() {
+    res.send('failed. Please try again later');
   });
 });
 
