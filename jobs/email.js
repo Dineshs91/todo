@@ -17,10 +17,10 @@ function fetchEndingTodos() {
   var futureTimestamp = new Date((nowTimestamp + 3600000));
   Todo.find({ due_time: { $gt: nowTimestamp, $lt: futureTimestamp } })
   .populate('user')
-  .then(function(todos, err) {
-    if(err)
-      deferred.reject(err);
+  .then(function(todos) {
     deferred.resolve(todos);
+  }).catch(function(err) {
+    deferred.reject(err);
   });
 
   return deferred.promise;
@@ -43,9 +43,7 @@ function prepareMail(todo) {
   });
 
   // Persist email token in db.
-  emailAction.save(function(mail, err) {
-    if(err)
-      deferred.reject(err);
+  emailAction.save().then(function(mail) {
     var closeUrl = constructUrl(todoId, token, 'close');
     var postponeUrl = constructUrl(todoId, token, 'postpone');
 
@@ -53,7 +51,7 @@ function prepareMail(todo) {
   }).then(function() {
     deferred.resolve();
   }).catch(function(err) {
-    console.log(err);
+    console.log('[prepareMail]' + err);
   });
 
   return deferred.promise;
@@ -85,8 +83,7 @@ function prepareAndSendEmail(todos) {
     prepareMailPromises.push(prepareMailPromise);
   }
 
-  Q.all(prepareMailPromises).then(function(generatedTokenResolutions) {
-    console.log(generatedTokenResolutions);
+  Q.all(prepareMailPromises).then(function() {
     deferred.resolve();
   }).catch(function(err) {
     console.log("Something went wrong when generating token [" + err + "]");
@@ -98,9 +95,9 @@ function prepareAndSendEmail(todos) {
 
 function start() {
   fetchEndingTodos().then(function(todos) {
-    prepareAndSendEmail(todos);
+    return prepareAndSendEmail(todos);
   }).catch(function(err) {
-    console.log(err);
+    console.log('[start]' + err);
   }).fin(function() {
     mongoose.connection.close();
   })
