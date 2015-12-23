@@ -2,6 +2,9 @@ var express = require('express');
 var http = require('http');
 var router = express.Router();
 var Q = require('q');
+var mongoose = require('mongoose');
+
+mongoose.promise = Q.promise;
 
 var User = require('../models/user').User;
 var Todo = require('../models/todo').Todo;
@@ -66,21 +69,21 @@ var updatePlace = function(req) {
 
 router.get('/', isLoggedIn, function(req, res, next) {
   var ip = req.connection.remoteAddress;
+  var place = '';
 
-  User.findOne({ email: req.user.email }).then(function(user) {
-    if(user && !('place' in user)) {
-      getLocation(ip).then(function(place) {
-        User.update({ email: req.user.email }, { place: place }, function(err, user) {
-          if(err)
-            return handleError(err);
-        });
-      });
-     }
-     return Todo.find({ user: req.user.id });
+  getLocation(ip).then(function(place) {
+    place = place;
+    return Todo.find({ user: req.user.id });
    }).then(function(todos) {
     res.render('todo', {
       user: req.user,
-      todos: todos
+      todos: todos,
+      place: place
+    });
+  }).catch(function(err) {
+    res.render('error', {
+      message: err.message,
+      error: {}
     });
   });
 });
