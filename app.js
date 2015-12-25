@@ -12,6 +12,7 @@ var expressHandlebars = require('express-handlebars');
 var LocalStrategy = require('passport-local');
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var FacebookStrategy = require('passport-facebook');
+var bcrypt = require('bcryptjs');
 var config = require('./config').config;
 var User = require('./models/user').User;
 
@@ -63,10 +64,12 @@ passport.use('local-signup', new LocalStrategy({
     User.findOne({ email: email }, function (err, user) {
       if (err) { return done(err); }
       if (!user) {
+        var passwordHash = bcrypt.hashSync(password, 8);
+
         // Insert into db
         var NewUser = new User({
           email: email,
-          password_hash: password,
+          password_hash: passwordHash,
           auth_method: 'local',
           timestamp: Date.now()
         });
@@ -89,7 +92,7 @@ passport.use('local-login', new LocalStrategy({
       if (!user) {
         return done(null, false, { message: 'Incorrect username.' });
       }
-      if (user.password_hash !== password) {
+      if (!bcrypt.compareSync(password, user.password_hash)) {
         return done(null, false, { message: 'Incorrect password.' });
       }
       return done(null, user);
