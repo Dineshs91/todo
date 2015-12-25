@@ -39,6 +39,8 @@ function getLocation(ip) {
 }
 
 var saveTodo = function(req) {
+  var deferred = Q.defer();
+
   var content = req.body.content;
   var due_time = new Date(req.body.time);
   var location = req.body.location;
@@ -52,8 +54,12 @@ var saveTodo = function(req) {
   });
   
   TodoItem.save().then(function(todo) {
-    //done
+    deferred.resolve();
+  }).catch(function(err) {
+    deferred.reject(err);
   });
+
+  return deferred.promise;
 };
 
 router.get('/', isLoggedIn, function(req, res, next) {
@@ -79,10 +85,15 @@ router.get('/', isLoggedIn, function(req, res, next) {
 
 //Handle adding a todo
 router.post('/add', isLoggedIn, function(req, res, next) {
-  saveTodo(req);
-
-  Todo.find({ user: req.user.id }).then(function(todos) {
+  saveTodo(req).then(function() {
+    return Todo.find({ user: req.user.id });
+  }).then(function(todos) {
     res.json({'todos': todos});
+  }).catch(function(err) {
+    res.render('error', {
+      message: err.message,
+      error: {}
+    });
   });
 });
 
