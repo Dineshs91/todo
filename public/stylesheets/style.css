@@ -68,3 +68,13 @@ body {
     height: 20px;
     color: red;
 }
+
+.email-action {
+  padding: 20px 50px 130px 50px;
+  border: 1px solid #c2c7d0;
+  border-radius: 5px;
+  left: 32%;
+  top: 10%;
+  position: relative;
+  width: 500px;
+}

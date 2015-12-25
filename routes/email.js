@@ -18,7 +18,7 @@ function validateToken(token) {
     if(actions == undefined) {
       deferred.resolve(false);
     } else {
-      deferred.resolve(true);
+      deferred.reject();
     }
   }).catch(function(err) {
     deferred.reject(err);
@@ -61,9 +61,13 @@ router.get('/todo/:todoId/:token/:action', function(req, res) {
       return updateTodo(todoId, action);
     }
   }).then(function() {
-    res.send('Action completed successfully');
+    res.render('email_action', {
+      message: 'Action completed successfully.'
+    });
   }).catch(function() {
-    res.send('failed. Please try again later');
+    res.render('email_action', {
+      message: 'Failed. Please try again later.'
+    });
   });
 });
 
