@@ -1,10 +1,13 @@
 var mongoose = require('mongoose');
 var crypto = require('crypto');
 var Q = require('q');
+var nodemailer = require('nodemailer');
 
 var Todo = require('../models/todo.js').Todo;
 var User = require('../models/user.js').User;
 var EmailAction = require('../models/emailAction.js').EmailAction;
+
+var config = require('../config').config;
 
 mongoose.connect('mongodb://localhost/tododb1');
 mongoose.Promise = Q.Promise;
@@ -47,11 +50,12 @@ function prepareMail(todo) {
     var closeUrl = constructUrl(todoId, token, 'close');
     var postponeUrl = constructUrl(todoId, token, 'postpone');
 
-    return sendMail(token, closeUrl, postponeUrl);
+    return sendMail(todo, closeUrl, postponeUrl);
   }).then(function() {
     deferred.resolve();
   }).catch(function(err) {
     console.log('[prepareMail]' + err);
+    deferred.reject(err);
   });
 
   return deferred.promise;
@@ -62,11 +66,39 @@ function constructUrl(todoId, token, action) {
   return url;
 }
 
-function sendMail(email, closeUrl, postponeUrl) {
+function sendMail(todo, closeUrl, postponeUrl) {
+  var email = todo.user.email;
+  var todoContent = todo.content;
+  var dueTime = todo.due_time;
+
   //send mail.
   var deferred = Q.defer();
-  console.log(email + '---->' + closeUrl);
-  deferred.resolve();
+  // Start nodemailer code.
+  // Create transporter.
+  var transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+      user: config.GMAIL_USER,
+      pass: config.GMAIL_PASSWORD
+    }
+  });
+
+  var mailOptions = {
+    from: config.GMAIL_USER,
+    to: email,
+    subject: 'Your todo is nearing due time. Please take action',
+    html: '<h2>Todo</h2>' +
+          'Todo: <h4>' + todoContent + '</h4> is nearing its due time <strong>' + dueTime + '</strong>&nbsp;' +
+          '<a href=' + closeUrl + '>close</a>&nbsp;' +
+          '<a href=' + postponeUrl + '>postpone</a>&nbsp;'
+  };
+
+  transporter.sendMail(mailOptions, function(err, info) {
+    if(err)
+      deferred.reject(err);
+    deferred.resolve();
+  });
+
   return deferred.promise;
 }
 
