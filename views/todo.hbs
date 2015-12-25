@@ -8,7 +8,7 @@
 <div class="todos">
     <ul class="list-group">
     {{#each todos}}
-        <li class="list-group-item">{{this.content}} - {{this.due_time}} - {{this.stat}}</li>
+        <li class="list-group-item">{{this.content}} - {{this.due_time}} - {{this.stat}} - {{this.location}}</li>
     {{/each}}
     </ul>
 </div>
@@ -31,6 +31,10 @@
                 <div class="form-group">
                     <label for="datetimepicker">Due time</label>
                     <input type="text" class="form-control" id="datetimepicker" placeholder="Due time" data-date-format="yyyy-mm-dd hh:ii">
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" class="form-control" id="location" name="location" placeholder="Location" value={{location}}>
                 </div>
           </div>
           <div class="modal-footer">

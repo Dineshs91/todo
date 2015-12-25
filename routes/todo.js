@@ -31,7 +31,7 @@ function getLocation(ip) {
     });
 
     response.on('error', function(err) {
-      deferred.refect(err);
+      deferred.reject(err);
     })
   }).end();
 
@@ -41,10 +41,12 @@ function getLocation(ip) {
 var saveTodo = function(req) {
   var content = req.body.content;
   var due_time = new Date(req.body.time);
+  var location = req.body.location;
 
   var TodoItem = new Todo({
     user: req.user.id,
     content: content,
+    location: location,
     due_time: due_time,
     stat: 'progress'
   });
@@ -54,31 +56,18 @@ var saveTodo = function(req) {
   });
 };
 
-var updatePlace = function(req) {
-  var deferred = Q.defer();
-  var place = req.body.place;
-
-  User.update({ email: req.user.email }, { place: place }, function(err, user) {
-    if(err)
-      return handleError(err);
-    deferred.resolve();
-  });
-
-  return deferred.promise;
-};
-
 router.get('/', isLoggedIn, function(req, res, next) {
   var ip = req.connection.remoteAddress;
-  var place = '';
+  var location = '';
 
   getLocation(ip).then(function(place) {
-    place = place;
+    location = place;
     return Todo.find({ user: req.user.id });
    }).then(function(todos) {
     res.render('todo', {
       user: req.user,
       todos: todos,
-      place: place
+      location: location
     });
   }).catch(function(err) {
     res.render('error', {
@@ -94,12 +83,6 @@ router.post('/add', isLoggedIn, function(req, res, next) {
 
   Todo.find({ user: req.user.id }).then(function(todos) {
     res.json({'todos': todos});
-  });
-});
-
-router.post('/place', isLoggedIn, function(req, res, next) {
-  updatePlace(req).then(function() {
-    res.json({'status': 'success'});
   });
 });
 

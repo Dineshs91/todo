@@ -15,23 +15,13 @@ $(function() {
   });
 });
 
-function updateLocation() {
-  var place = $('.user-place').val();
-
-  $.post('/todo/place', {place: place})
-  .done(function(data) {
-    showLocationMessage('Location updated successfully');
-  }).fail(function(err) {
-    showLocationMessage('Something went wrong. Please try again');
-  });
-}
-
 function validateTodo() {
   var content = $('#todo-content').val();
   var time = $('#datetimepicker').val();
+  var location = $('#location').val();
   
-  if(!isEmpty(content) && !isEmpty(time)) {
-    saveTodo(content, time);
+  if(!isEmpty(content) && !isEmpty(time) && !isEmpty(location)) {
+    saveTodo(content, time, location);
   }
   
   var msg = '';
@@ -42,13 +32,17 @@ function validateTodo() {
   if(isEmpty(time)) {
     msg = msg + 'Choose a due time. ';
   }
+
+  if(isEmpty(location)) {
+    msg = msg + 'Choose a location. ';
+  }
   
   showMessageInAddModal(msg);
 }
 
 // Ajax call to /todo/add
-function saveTodo(content, time) {
-  $.post('/todo/add', {content: content, time: time})
+function saveTodo(content, time, location) {
+  $.post('/todo/add', {content: content, time: time, location: location})
   .done(function(data) {
     $('#addModal').modal('hide');
 
@@ -73,7 +67,7 @@ function appendTodo(data) {
     var newTodo = todos;
   }
   
-  var ele = '<li class="list-group-item">' + newTodo.content + ' - ' + new Date(newTodo.due_time) + ' - ' + newTodo.stat + '</li>';
+  var ele = '<li class="list-group-item">' + newTodo.content + ' - ' + new Date(newTodo.due_time) + ' - ' + newTodo.stat + ' - ' + newTodo.location + '</li>';
   $('ul.list-group').append(ele);
 }
 

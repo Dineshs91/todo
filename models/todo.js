@@ -6,6 +6,7 @@ var TodoSchema = new mongoose.Schema({
     ref: 'User'
   },
   content: String,
+  location: String,
   due_time: Date,
   stat: String
 });
