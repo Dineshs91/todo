@@ -67,7 +67,8 @@ function appendTodo(data) {
     var newTodo = todos;
   }
   
-  var ele = '<li class="list-group-item">' + newTodo.content + ' - ' + new Date(newTodo.due_time) + ' - ' + newTodo.stat + ' - ' + newTodo.location + '</li>';
+  var ele = '<li class="list-group-item">' + newTodo.content + ' - ' + new Date(newTodo.due_time)
+            + ' - ' + newTodo.stat + ' - ' + newTodo.location + '</li>';
   $('ul.list-group').append(ele);
 }
 
