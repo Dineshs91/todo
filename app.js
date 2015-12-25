@@ -12,8 +12,9 @@ var expressHandlebars = require('express-handlebars');
 var LocalStrategy = require('passport-local');
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var FacebookStrategy = require('passport-facebook');
+var bcrypt = require('bcryptjs');
+var config = require('./config').config;
 var User = require('./models/user').User;
-var OAuthUser = require('./models/oauth-user').OAuthUser;
 
 var home = require('./routes/home');
 var signup = require('./routes/signup');
@@ -23,8 +24,8 @@ var email = require('./routes/email');
 
 var app = express();
 
-var GOOGLE_CLIENT_ID = "143469076622-evb489mvj04rgduolunsfjpfpijd7lie.apps.googleusercontent.com";
-var GOOGLE_CLIENT_SECRET = "nO9KUhqsaUxBows1WEeURjeY";
+var GOOGLE_CLIENT_ID = config.GOOGLE_CLIENT_ID;
+var GOOGLE_CLIENT_SECRET = config.GOOGLE_CLIENT_SECRET;
 
 // connect to mongodb
 mongoose.connect('mongodb://localhost/tododb1');
@@ -63,10 +64,14 @@ passport.use('local-signup', new LocalStrategy({
     User.findOne({ email: email }, function (err, user) {
       if (err) { return done(err); }
       if (!user) {
+        var passwordHash = bcrypt.hashSync(password, 8);
+
         // Insert into db
         var NewUser = new User({
           email: email,
-          password: password
+          password_hash: passwordHash,
+          auth_method: 'local',
+          timestamp: Date.now()
         });
         NewUser.save().then(function(user) {
           return done(null, user);  
@@ -87,7 +92,7 @@ passport.use('local-login', new LocalStrategy({
       if (!user) {
         return done(null, false, { message: 'Incorrect username.' });
       }
-      if (user.password !== password) {
+      if (!bcrypt.compareSync(password, user.password_hash)) {
         return done(null, false, { message: 'Incorrect password.' });
       }
       return done(null, user);
@@ -101,19 +106,22 @@ passport.use('google', new GoogleStrategy({
   clientSecret: GOOGLE_CLIENT_SECRET,
   callbackURL: "http://localhost:3000/auth/google/callback"
 }, function(accessToken, refreshToken, profile, done) {
-  OAuthUser.findOne({ google_id: profile.id }, function(err, oauthUser) {
+  User.findOne({ profile_id: profile.id }, function(err, user) {
     if(err)
       return done(err);
     
-    if(oauthUser) {
-      return done(null, oauthUser);
+    if(user) {
+      return done(null, user);
     } else {
-      var newUser = new OAuthUser();
-      newUser.profile_id = profile.id;
-      newUser.access_token = accessToken;
-      newUser.refresh_token = refreshToken;
-      newUser.email = profile.emails[0].value;
-      
+      var newUser = new User({
+        profile_id: profile.id,
+        auth_method: 'google',
+        access_token: accessToken,
+        refresh_token: refreshToken,
+        email: profile.emails[0].value,
+        timestamp: Date.now()
+      });
+
       newUser.save(function(err) {
         if(err)
           throw err;
