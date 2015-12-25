@@ -14,11 +14,12 @@ function validateToken(token) {
 
   // check for token and expires.
   var nowTimestamp = Date.now()
-  EmailAction.find({ $and: [{token: token }, {expires: { $lt: nowTimestamp } }] }).then(function(actions) {
+  EmailAction.find({ $and: [{token: token }, {expires: { $lt: nowTimestamp } },
+   {stat: { $ne: 'closed' } }] }).then(function(actions) {
     if(actions == undefined) {
-      deferred.resolve(false);
-    } else {
       deferred.reject();
+    } else {
+      deferred.resolve(true);
     }
   }).catch(function(err) {
     deferred.reject(err);
