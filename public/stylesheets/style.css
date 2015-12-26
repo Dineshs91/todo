@@ -4,8 +4,8 @@ body {
 }
 
 #container {
-  padding: 10px;
-	height: 100%;
+  padding: 0 70px 0 70px;
+  height: 100%;
 }
 
 #header {
