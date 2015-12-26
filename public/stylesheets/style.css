@@ -63,6 +63,23 @@ body {
     padding-top: 20px;
 }
 
+.todo-list {
+  margin-left: 15%;
+  margin-right: 7%
+}
+
+.add.btn {
+  float: right;
+}
+
+ul.list-group {
+  margin-top: 30px;
+}
+
+li.list-group-item {
+  margin-top: 10px;
+}
+
 .message {
     text-align: center;
     height: 20px;
