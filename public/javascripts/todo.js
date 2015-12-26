@@ -66,8 +66,19 @@ function appendTodo(data) {
   } else {
     var newTodo = todos;
   }
-  
-  var ele = '<li class="list-group-item">' + newTodo.content + ' - ' + new Date(newTodo.due_time)
+
+  var options = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true
+  };
+
+  var dateTime = new Date(newTodo.due_time);
+  var ele = '<li class="list-group-item">' + newTodo.content + ' - ' + dateTime.toLocaleString('en-US', options)
             + ' - ' + newTodo.stat + ' - ' + newTodo.location + '</li>';
   $('ul.list-group').append(ele);
 }

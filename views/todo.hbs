@@ -6,12 +6,13 @@
       <span class="glyphicon glyphicon-plus"></span>Add
   </button>
 
-<div class="todos">
-    <ul class="list-group">
-    {{#each todos}}
-        <li class="list-group-item">{{this.content}} - {{this.due_time}} - {{this.stat}} - {{this.location}}</li>
-    {{/each}}
-    </ul>
+  <div class="todos">
+      <ul class="list-group">
+      {{#each todos}}
+          <li class="list-group-item">{{this.content}} - {{dateFormat this.due_time}} - {{this.stat}} - {{this.location}}</li>
+      {{/each}}
+      </ul>
+  </div>
 </div>
 
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog">

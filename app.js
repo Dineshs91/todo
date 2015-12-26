@@ -33,7 +33,27 @@ mongoose.connect('mongodb://localhost/tododb1');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 
-app.engine('.hbs', expressHandlebars({defaultLayout: 'main', extname: '.hbs'}));
+var hbs = expressHandlebars.create({
+  helpers: {
+    dateFormat: function(value) {
+      var options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true
+      };
+
+      return new Date(value).toLocaleString('en-US', options);
+    }
+  },
+  defaultLayout: 'main',
+  extname: '.hbs'
+});
+
+app.engine('.hbs', hbs.engine);
 app.set('view engine', '.hbs');
 
 // uncomment after placing your favicon in /public
