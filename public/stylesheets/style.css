@@ -28,6 +28,10 @@ body {
   font-family: fantasy;
 }
 
+.sign-buttons {
+  float: right;
+}
+
 .home-content {
   font-size: 25px;
   padding-top: 1px;
@@ -58,10 +62,6 @@ body {
 .footer-content {
   position: relative;
   text-align: center;
-}
-
-.sign-buttons {
-  float: right;
 }
 
 .user-form {
