@@ -6,12 +6,13 @@ var passport = require('passport');
 var User = require('../models/user').User;
 
 router.get('/', function(req, res, next) {
-  res.render('auth');
+  res.render('auth', { message: req.flash('error') });
 });
 
 router.post('/', passport.authenticate('local-signup', {
   successRedirect: '/todo',
-  failureRedirect: '/signup'
+  failureRedirect: '/signup',
+  failureFlash: true
   })
 );
 

@@ -13,6 +13,7 @@ var LocalStrategy = require('passport-local');
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var FacebookStrategy = require('passport-facebook');
 var bcrypt = require('bcryptjs');
+var flash = require('connect-flash');
 var config = require('./config').config;
 var User = require('./models/user').User;
 
@@ -66,6 +67,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(methodOverride('X-HTTP-Method-Override'));
 app.use(session({secret: 'stellar', saveUninitialized: true, resave: true}));
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -97,7 +99,7 @@ passport.use('local-signup', new LocalStrategy({
           return done(null, user);  
         });
       } else {
-        return done(null, false);
+        return done(null, false, { message: 'Email already exists' });
       }
     });
   }

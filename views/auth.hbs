@@ -7,10 +7,10 @@
   </ul>
 
   <!-- Tab panes -->
+  <div class="message">{{message}}</div>
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane fade in active" id="login">
         <h2>Please login</h2>
-        <div class="message"></div>
         <form name='loginForm' action='/login' method='post'>
             <div class="form-group">
                 <label for="email">Email address</label>
@@ -27,7 +27,6 @@
     
     <div role="tabpanel" class="tab-pane fade" id="signup">
         <h2>Signup for a new account</h2>
-        <div class="message"></div>
         <form name='signupForm' action='/signup' method='post'>
             <div class="form-group">
                 <label for="email">Email address</label>
