@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 
 var EmailActionSchema = new mongoose.Schema({
   email: String,
+  todo_id: String,
   token: String,
   created: Date,
   expires: Date

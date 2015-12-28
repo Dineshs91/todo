@@ -18,7 +18,7 @@ function fetchEndingTodos() {
   // Get all todos with status='progress' and due date between now and now + 60s
   var nowTimestamp = Date.now();
   var futureTimestamp = new Date((nowTimestamp + 3600000));
-  Todo.find({ due_time: { $gt: nowTimestamp, $lt: futureTimestamp } })
+  Todo.find({ $and: [ {stat: { $ne: 'closed' } }, {due_time: { $gt: nowTimestamp, $lt: futureTimestamp }} ] })
   .populate('user')
   .then(function(todos) {
     deferred.resolve(todos);
@@ -40,6 +40,7 @@ function prepareMail(todo) {
   var nowTimestamp = Date.now();
   var emailAction = new EmailAction({
     email: email,
+    todo_id: todoId,
     token: token,
     created: nowTimestamp,
     expires: new Date((nowTimestamp + 3600000))
