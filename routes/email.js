@@ -43,7 +43,10 @@ function validateTodo(todoId) {
   var deferred = Q.defer();
 
   var todoObjectId = ObjectId(todoId);
-  Todo.find({ $and: [ { _id: todoObjectId }, {stat: { $ne: 'closed' }} ]}).then(function() {
+  Todo.find({ $and: [ { _id: todoObjectId }, {stat: { $ne: 'closed' }} ]}).then(function(todos) {
+    if(todos === undefined || todos.length === 0) {
+      deferred.reject();
+    }
     deferred.resolve(true);
   }).catch(function(err) {
     deferred.reject(err);
